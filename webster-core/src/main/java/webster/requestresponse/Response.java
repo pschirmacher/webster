@@ -78,7 +78,7 @@ public class Response {
         if (body == null) {
             return "null";
         } else if (body instanceof String) {
-            return body.toString().length() >= maxLen ? body.toString().substring(0, maxLen) + "..." : body.toString();
+            return body.toString().length() > maxLen ? body.toString().substring(0, maxLen) + "..." : body.toString();
         } else {
             return body.toString();
         }
