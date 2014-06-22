@@ -16,3 +16,8 @@ Java 8 and Maven 3 are required.
 
 This will install the JARs to your local maven repository. Have a look at [webster-example](https://github.com/pschirmacher/webster-example)
 for an example application.
+
+Author and license
+------------------
+
+Copyright 2014 Philipp Schirmacher. Published under the Apache 2.0 license.
