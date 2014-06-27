@@ -57,7 +57,7 @@ Simply Java
 -----------
 
 Webster is built using plain Java (except for generating HTML which is done using [Scalate](http://scalate.fusesource.org/documentation/index.html)).
-This makes it easy to get started using a familiar environment, great IDE support robust and very fast compiler.
+This makes it easy to get started using a familiar environment, great IDE support and very robust & fast compiler.
 It should also provide a sound basis for using it from other JVM languages.
 
 Getting started
