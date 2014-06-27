@@ -119,7 +119,7 @@ public interface Resource {
     }
 
     default Set<String> supportedMediaTypes() {
-        return Collections.singleton("*/*");
+        return Collections.singleton("text/html");
     }
 
     default Set<String> allowedMethods() {

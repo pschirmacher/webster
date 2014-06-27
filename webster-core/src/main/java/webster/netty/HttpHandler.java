@@ -62,7 +62,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         CompletableFuture<Response> timeout = timeoutResponseFuture();
         CompletableFuture
                 .supplyAsync(() -> requestHandler.apply(request), executor) // creation of the future
-                .thenCompose(f -> f.exceptionally(Response::new)) // transformation of the future to handle exceptions
+                .thenCompose(f -> f.exceptionally(Response::new)) // handle exceptions during future creation
+                //.exceptionally(Response::new) // handle exceptions during actual future processing
                 .acceptEither(timeout, r -> {
                     ReferenceCountUtil.release(req);
                     handleResponse(r, ctx, keepAlive); // handle response of either timeout or requestHandler

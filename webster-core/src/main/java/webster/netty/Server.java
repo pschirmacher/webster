@@ -12,12 +12,23 @@ import webster.requestresponse.Request;
 import webster.requestresponse.Response;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 public class Server {
 
-    public void run(Function<Request, CompletableFuture<Response>> requestHandler) throws Exception {
+    private final ExecutorService executorService;
+    private final int port;
+    private final long timeoutMillis;
+
+    public Server(ExecutorService executorService, int port, long timeoutMillis) {
+        this.executorService = executorService;
+        this.port = port;
+        this.timeoutMillis = timeoutMillis;
+    }
+
+    public void run(Function<Request, CompletableFuture<Response>> requestHandler) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -32,20 +43,47 @@ public class Server {
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(maxContentLength));
                             pipeline.addLast(new ChunkedWriteHandler());
-                            pipeline.addLast(new HttpHandler(requestHandler, ForkJoinPool.commonPool(), 30000l));
+                            pipeline.addLast(new HttpHandler(requestHandler, executorService, timeoutMillis));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture f = b.bind(8080).sync();
-            System.out.println("running on port 8080");
+            ChannelFuture f = b.bind(port).sync();
+            System.out.println("listening on port " + port);
 
             // wait until server socket is closed
             f.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+        }
+    }
+
+    public static class Builder {
+        private ExecutorService executorService = ForkJoinPool.commonPool();
+        private int port = 8080;
+        private long timeoutMillis = 30000l;
+
+        public Server build() {
+            return new Server(executorService, port, timeoutMillis);
+        }
+
+        public Builder withExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+            return this;
+        }
+
+        public Builder withPort(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder withTimeoutMillis(long timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
+            return this;
         }
     }
 }
