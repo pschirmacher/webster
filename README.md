@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pschirmacher/webster.svg?branch=master)](https://travis-ci.org/pschirmacher/webster)
+
 Webster
 =======
 
@@ -30,8 +32,8 @@ Handling a request is done in two steps:
     client.
 
 To implement the second step, Webster uses an approach which is similar to the one pioneered by [Webmachine](https://github.com/basho/webmachine/wiki).
-Each request is processed according to this [diagram](https://github.com/basho/webmachine/wiki/Diagram) (or at least very similarly). 
-This is the main thing Webster does for you (implemented [here](https://github.com/pschirmacher/webster/blob/master/webster-core/src/main/java/webster/decisions/DefaultFlow.java#L390)). 
+Each request is processed according to this [diagram](https://github.com/basho/webmachine/wiki/Diagram) (or at least very similarly).
+This is the main thing Webster does for you (implemented [here](https://github.com/pschirmacher/webster/blob/master/webster-core/src/main/java/webster/decisions/DefaultFlow.java#L390)).
 
 As an application developer, you can focus on your application specific resources.
 
@@ -49,7 +51,7 @@ Async & containerless
 -----------------------
 
 Webster does not block the thread that initially accepts a HTTP request. Instead, request processing is done
-asynchronously using Java 8's CompletableFutures ([tutorial](http://www.nurkiewicz.com/2013/05/java-8-definitive-guide-to.html)). 
+asynchronously using Java 8's CompletableFutures ([tutorial](http://www.nurkiewicz.com/2013/05/java-8-definitive-guide-to.html)).
 You are also not required to use a servlet container. Webster does non-blocking IO using [Netty](http://netty.io/).
 Just package your entire application as a JAR including dependencies and you're set!
 
@@ -89,36 +91,36 @@ The following will start a server which is listening for requests on [localhost:
     import webster.requestresponse.Request;
     import webster.resource.Resource;
     import webster.routing.RoutingTable;
-    
+
     import java.util.Optional;
     import java.util.concurrent.CompletableFuture;
-    
+
     import static webster.routing.RoutingBuilder.from;
     import static webster.routing.RoutingBuilder.routingTable;
-    
+
     public class App {
-    
+
         public static void main(String[] args) {
-    
+
             RoutingTable routingTable = routingTable()
                     .withRoute(from("/hello").toResource(new HelloWorld()))
                     .build();
-    
+
             new Server.Builder().withPort(8080).build().run(routingTable);
         }
-    
+
         public static class HelloWorld implements Resource {
-    
+
             @Override
             public CompletableFuture<Boolean> doesRequestedResourceExist(Request request) {
                 return CompletableFuture.completedFuture(true);
             }
-    
+
             @Override
             public CompletableFuture<Object> entity(Request request) {
                 return CompletableFuture.completedFuture("<h1>Hello from Webster!</h1>");
             }
-    
+
             @Override
             public CompletableFuture<Optional<String>> etag(Request request) {
                 return CompletableFuture.completedFuture(Optional.of("1"));
