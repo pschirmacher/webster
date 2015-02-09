@@ -1,5 +1,7 @@
 package webster.decisions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
 import webster.resource.Resource;
@@ -8,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 public class Action implements Node {
+    private final static Logger logger = LoggerFactory.getLogger(Action.class);
 
     private final String name;
     private final BiFunction<Resource, Request, CompletableFuture<Void>> action;
@@ -21,7 +24,7 @@ public class Action implements Node {
 
     @Override
     public CompletableFuture<Response> apply(Resource resource, Request request) {
-        System.out.println("performing " + name + " action");
+        logger.info("performing " + name + " action");
         return action.apply(resource, request)
                 .thenCompose(ignored -> then.apply(resource, request));
     }

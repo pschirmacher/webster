@@ -8,6 +8,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 public class Server {
+    private final static Logger logger = LoggerFactory.getLogger(Server.class);
 
     private final ExecutorService executorService;
     private final int port;
@@ -50,7 +53,7 @@ public class Server {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(port).sync();
-            System.out.println("listening on port " + port);
+            logger.info("listening on port " + port);
 
             // wait until server socket is closed
             f.channel().closeFuture().sync();
