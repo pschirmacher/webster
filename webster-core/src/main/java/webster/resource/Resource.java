@@ -2,6 +2,7 @@ package webster.resource;
 
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
+import webster.requestresponse.ResponseBody;
 
 import java.time.Instant;
 import java.util.*;
@@ -133,5 +134,5 @@ public interface Resource {
 
     CompletableFuture<Boolean> doesRequestedResourceExist(Request request);
 
-    CompletableFuture<Object> entity(Request request);
+    CompletableFuture<ResponseBody> entity(Request request);
 }

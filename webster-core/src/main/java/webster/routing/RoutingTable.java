@@ -2,6 +2,7 @@ package webster.routing;
 
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
+import webster.requestresponse.Responses;
 import webster.util.Maps;
 
 import java.util.List;
@@ -21,6 +22,6 @@ public class RoutingTable implements Decoratable<Request, CompletableFuture<Resp
         Optional<Route> route = routes.stream().filter(r -> r.matches(request)).findFirst();
         return route.isPresent()
                 ? route.get().apply(request)
-                : CompletableFuture.completedFuture(new Response(404, "not found", Maps.newStringMap().with("Content-Type", "text/plain").build()));
+                : CompletableFuture.completedFuture(new Response(404, Responses.from("not found"), Maps.newStringMap().with("Content-Type", "text/plain").build()));
     }
 }

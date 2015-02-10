@@ -1,25 +1,29 @@
 package webster.requestresponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Response {
+    private static final Logger logger = LoggerFactory.getLogger(Response.class);
 
     private final int status;
-    private final Object body;
+    private final ResponseBody body;
     private final Map<String, String> headers;
 
     public Response(Throwable throwable) {
-        this(500, "internal server error");
-        throwable.printStackTrace(); // TODO proper logging
+        this(500, new StringResponseBody("internal server error"));
+        logger.warn(throwable.getMessage(), throwable);
     }
 
     public Response(int status) {
         this(status, null, new HashMap<>());
     }
 
-    public Response(int status, Object body) {
+    public Response(int status, ResponseBody body) {
         this(status, body, new HashMap<>());
     }
 
@@ -27,7 +31,7 @@ public class Response {
         this(status, null, headers);
     }
 
-    public Response(int status, Object body, Map<String, String> headers) {
+    public Response(int status, ResponseBody body, Map<String, String> headers) {
         Objects.requireNonNull(headers);
         this.headers = headers;
         this.status = status;
@@ -38,7 +42,7 @@ public class Response {
         return status;
     }
 
-    public Object body() {
+    public ResponseBody body() {
         return body;
     }
 
@@ -60,7 +64,7 @@ public class Response {
         return new Response(status, body, headers);
     }
 
-    public Response withBody(Object body) {
+    public Response withBody(ResponseBody body) {
         return new Response(status, body, headers);
     }
 
@@ -74,13 +78,6 @@ public class Response {
     }
 
     private String bodyToString() {
-        int maxLen = 100;
-        if (body == null) {
-            return "null";
-        } else if (body instanceof String) {
-            return body.toString().length() > maxLen ? body.toString().substring(0, maxLen) + "..." : body.toString();
-        } else {
-            return body.toString();
-        }
+        return body().process(Processors.stringProcessor(100));
     }
 }

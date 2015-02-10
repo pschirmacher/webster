@@ -9,14 +9,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.util.ReferenceCountUtil;
-import webster.requestresponse.Request;
-import webster.requestresponse.Response;
+import webster.requestresponse.*;
 import webster.util.Futures;
 
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
@@ -27,6 +27,7 @@ import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import static webster.requestresponse.Responses.from;
 
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
@@ -71,17 +72,30 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     private CompletableFuture<Response> timeoutResponseFuture() {
-        return Futures.afterTimeout(new Response(500, "request processing timed out"), timeoutMillis);
+        return Futures.afterTimeout(new Response(500, from("request processing timed out")), timeoutMillis);
     }
 
     private void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {
-        if (response.body() == null || response.body() instanceof String) {
-            handleFullResponse(
-                    createFullResponse(response.status(), response.headers(), (String) response.body()),
-                    context, keepAlive);
-        } else if (response.body() instanceof InputStream) {
-            handleStreamResponse(response.status(), response.headers(), (InputStream) response.body(), context, keepAlive);
-        }
+        response.body().process(new ResponseBodyProcessor<Optional<Void>>() {
+            @Override
+            public Optional<Void> process(StringResponseBody body) {
+                handleFullResponse(
+                        createFullResponse(response.status(), response.headers(), body.content()),
+                        context, keepAlive);
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<Void> process(InputStreamResponseBody body) {
+                handleStreamResponse(response.status(), response.headers(), (InputStream) response.body(), context, keepAlive);
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<Void> process(EmptyResponseBody body) {
+                return Optional.empty();
+            }
+        });
     }
 
     private void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
