@@ -19,7 +19,7 @@ public abstract class HtmlResource implements Resource, Html {
     @Override
     public CompletableFuture<ResponseBody> entity(Request request) {
         return templateModel(request)
-                .thenApply(model -> Responses.from(renderHtml(template(), model, request)));
+                .thenApply(model -> Responses.bodyFrom(renderHtml(template(), model, request)));
     }
 
     public abstract String template();

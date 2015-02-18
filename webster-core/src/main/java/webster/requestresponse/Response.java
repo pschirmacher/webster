@@ -20,7 +20,7 @@ public class Response {
     }
 
     public Response(int status) {
-        this(status, null, new HashMap<>());
+        this(status, Responses.emptyBody(), new HashMap<>());
     }
 
     public Response(int status, ResponseBody body) {
@@ -28,7 +28,7 @@ public class Response {
     }
 
     public Response(int status, Map<String, String> headers) {
-        this(status, null, headers);
+        this(status, Responses.emptyBody(), headers);
     }
 
     public Response(int status, ResponseBody body, Map<String, String> headers) {

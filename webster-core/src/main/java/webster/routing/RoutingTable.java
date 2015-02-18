@@ -22,6 +22,6 @@ public class RoutingTable implements Decoratable<Request, CompletableFuture<Resp
         Optional<Route> route = routes.stream().filter(r -> r.matches(request)).findFirst();
         return route.isPresent()
                 ? route.get().apply(request)
-                : CompletableFuture.completedFuture(new Response(404, Responses.from("not found"), Maps.newStringMap().with("Content-Type", "text/plain").build()));
+                : CompletableFuture.completedFuture(new Response(404, Responses.bodyFrom("not found"), Maps.newStringMap().with("Content-Type", "text/plain").build()));
     }
 }

@@ -5,7 +5,6 @@ import webster.requestresponse.ResponseBody;
 import webster.requestresponse.Responses;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -13,7 +12,7 @@ public interface RedirectingResource extends Resource {
 
     @Override
     default CompletableFuture<ResponseBody> entity(Request request) {
-        return CompletableFuture.completedFuture(Responses.empty());
+        return CompletableFuture.completedFuture(Responses.emptyBody());
     }
 
     @Override

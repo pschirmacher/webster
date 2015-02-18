@@ -2,6 +2,7 @@ package webster.decisions;
 
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
+import webster.requestresponse.Responses;
 import webster.requestresponse.parsing.Parsable;
 import webster.util.Maps;
 
@@ -16,7 +17,6 @@ import static java.util.function.Function.identity;
 import static webster.decisions.NodeBuilder.*;
 import static webster.requestresponse.parsing.Parsers.*;
 import static webster.resource.ContentNegotiation.bestMediaTypeFor;
-import static webster.requestresponse.Responses.from;
 
 public class DefaultFlow {
 
@@ -78,7 +78,7 @@ public class DefaultFlow {
     }
 
     public static Completion.Fn notYetImplemented = (r, req) ->
-            CompletableFuture.completedFuture(new Response(500, from("--- NOT YET IMPLEMENTED ---")));
+            CompletableFuture.completedFuture(new Response(500, Responses.bodyFrom("--- NOT YET IMPLEMENTED ---")));
 
     public static Completion.Fn created = completionWithLocationAndStatus(201);
 
@@ -121,7 +121,7 @@ public class DefaultFlow {
             r.isMalformed(req);
 
     public static Completion.Fn badRequest = completionWithDefaults((r, req) ->
-            r.badRequestEntity(req).thenApply(e -> new Response(400, from(e))));
+            r.badRequestEntity(req).thenApply(e -> new Response(400, Responses.bodyFrom(e))));
 
     public static Action.Fn doDelete = (r, req) -> r.onDelete(req);
 
