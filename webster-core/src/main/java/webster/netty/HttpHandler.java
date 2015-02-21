@@ -83,27 +83,27 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     private void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {
-        response.body().process(new ResponseBodyProcessor<Optional<Void>>() {
+        response.body().process(new ResponseBodyProcessor<Void>() {
             @Override
-            public Optional<Void> process(StringResponseBody body) {
+            public Void process(StringResponseBody body) {
                 handleFullResponse(
                         createFullResponse(response.status(), response.headers(), body.content()),
                         context, keepAlive);
-                return Optional.empty();
+                return null;
             }
 
             @Override
-            public Optional<Void> process(InputStreamResponseBody body) {
+            public Void process(InputStreamResponseBody body) {
                 handleStreamResponse(response.status(), response.headers(), body.content(), context, keepAlive);
-                return Optional.empty();
+                return null;
             }
 
             @Override
-            public Optional<Void> process(EmptyResponseBody body) {
+            public Void process(EmptyResponseBody body) {
                 handleFullResponse(
                         createFullResponse(response.status(), response.headers(), ""),
                         context, keepAlive);
-                return Optional.empty();
+                return null;
             }
         });
     }
