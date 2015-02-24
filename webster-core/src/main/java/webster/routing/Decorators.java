@@ -35,7 +35,7 @@ public class Decorators {
                             if (resp != null)
                                 logger.info(resp.toString());
                             else if (throwable != null)
-                                throwable.printStackTrace();
+                                logger.warn(throwable.getMessage(), throwable);
                         });
             };
 }

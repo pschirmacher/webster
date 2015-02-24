@@ -2,6 +2,7 @@ package webster.resource;
 
 import webster.requestresponse.Request;
 import webster.requestresponse.ResponseBody;
+import webster.requestresponse.Responses;
 import webster.util.Maps;
 
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class AssetsResource implements Resource {
 
     @Override
     public CompletableFuture<ResponseBody> entity(Request request) {
-        return completedFuture(request.context().getExisting("asset"));
+        return completedFuture(Responses.bodyFrom(request.context().<InputStream>getExisting("asset")));
     }
 
     @Override
