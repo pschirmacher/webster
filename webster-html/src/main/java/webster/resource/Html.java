@@ -3,7 +3,8 @@ package webster.resource;
 import org.fusesource.scalate.japi.TemplateEngineFacade;
 import webster.Scalate;
 import webster.requestresponse.Request;
-import webster.requestresponse.Response;
+import webster.requestresponse.ResponseBody;
+import webster.requestresponse.Responses;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -23,8 +24,8 @@ public interface Html {
         return engine.layout(template, modelWithDefaults(model, request));
     }
 
-    default Function<Request, CompletableFuture<Object>> htmlProducer(
+    default Function<Request, CompletableFuture<ResponseBody>> htmlProducer(
             String template, Function<Request, CompletableFuture<Map<String, Object>>> modelFactory) {
-        return req -> modelFactory.apply(req).thenApply(model -> renderHtml(template, model, req));
+        return req -> modelFactory.apply(req).thenApply(model -> Responses.bodyFrom(renderHtml(template, model, req)));
     }
 }

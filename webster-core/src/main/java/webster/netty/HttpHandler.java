@@ -9,11 +9,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.util.ReferenceCountUtil;
-import webster.requestresponse.Request;
-import webster.requestresponse.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webster.requestresponse.*;
 import webster.util.Futures;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpHandler.class);
 
     private final Function<Request, CompletableFuture<Response>> requestHandler;
     private final ExecutorService executor;
@@ -63,25 +67,44 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         CompletableFuture
                 .supplyAsync(() -> requestHandler.apply(request), executor) // creation of the future
                 .thenCompose(f -> f.exceptionally(Response::new)) // handle exceptions during future creation
-                //.exceptionally(Response::new) // handle exceptions during actual future processing
                 .acceptEither(timeout, r -> {
                     ReferenceCountUtil.release(req);
                     handleResponse(r, ctx, keepAlive); // handle response of either timeout or requestHandler
+                })
+                .whenComplete((v, e) -> {
+                    if(e != null)
+                        exceptionCaught(ctx, e);
                 });
     }
 
     private CompletableFuture<Response> timeoutResponseFuture() {
-        return Futures.afterTimeout(new Response(500, "request processing timed out"), timeoutMillis);
+        return Futures.afterTimeout(new Response(500, Responses.bodyFrom("request processing timed out")), timeoutMillis);
     }
 
     private void handleResponse(Response response, ChannelHandlerContext context, boolean keepAlive) {
-        if (response.body() == null || response.body() instanceof String) {
-            handleFullResponse(
-                    createFullResponse(response.status(), response.headers(), (String) response.body()),
-                    context, keepAlive);
-        } else if (response.body() instanceof InputStream) {
-            handleStreamResponse(response.status(), response.headers(), (InputStream) response.body(), context, keepAlive);
-        }
+        response.body().process(new ResponseBodyProcessor<Void>() {
+            @Override
+            public Void process(StringResponseBody body) {
+                handleFullResponse(
+                        createFullResponse(response.status(), response.headers(), body.content()),
+                        context, keepAlive);
+                return null;
+            }
+
+            @Override
+            public Void process(InputStreamResponseBody body) {
+                handleStreamResponse(response.status(), response.headers(), body.content(), context, keepAlive);
+                return null;
+            }
+
+            @Override
+            public Void process(EmptyResponseBody body) {
+                handleFullResponse(
+                        createFullResponse(response.status(), response.headers(), ""),
+                        context, keepAlive);
+                return null;
+            }
+        });
     }
 
     private void handleFullResponse(FullHttpResponse response, ChannelHandlerContext context, boolean keepAlive) {
@@ -114,7 +137,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1,
                 HttpResponseStatus.valueOf(status),
-                body == null ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes())); // TODO charset
+                body.isEmpty() ? Unpooled.buffer(0) : Unpooled.wrappedBuffer(body.getBytes(Charset.forName("UTF-8")))); // TODO charset
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
         headers.entrySet().stream().forEach(header ->
                 response.headers().set(header.getKey(), header.getValue()));
@@ -134,8 +157,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace(); // TODO proper logging
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error(cause.getMessage(), cause);
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(500));
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }

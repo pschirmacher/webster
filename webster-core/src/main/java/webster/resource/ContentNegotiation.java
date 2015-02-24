@@ -2,6 +2,7 @@ package webster.resource;
 
 import spark.utils.MimeParse;
 import webster.requestresponse.Request;
+import webster.requestresponse.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public interface ContentNegotiation {
         }
     }
 
-    default CompletableFuture<Object> contentNegotiationEntity(Request request) {
+    default CompletableFuture<ResponseBody> contentNegotiationEntity(Request request) {
         String bestMatch = bestMediaTypeFor(request, contentNegotation().mediaTypes()).orElseThrow(IllegalStateException::new);
         return contentNegotation().producerFor(bestMatch).apply(request);
     }
@@ -40,17 +41,17 @@ public interface ContentNegotiation {
 
     public static class ContentNegotiator {
 
-        private final Map<String, Function<Request, CompletableFuture<Object>>> mediaTypeProducers = new HashMap<>();
+        private final Map<String, Function<Request, CompletableFuture<ResponseBody>>> mediaTypeProducers = new HashMap<>();
 
         public Set<String> mediaTypes() {
             return mediaTypeProducers.keySet();
         }
 
-        public Function<Request, CompletableFuture<Object>> producerFor(String mediaType) {
+        public Function<Request, CompletableFuture<ResponseBody>> producerFor(String mediaType) {
             return mediaTypeProducers.get(mediaType);
         }
 
-        public ContentNegotiator mediaType(String mediaType, Function<Request, CompletableFuture<Object>> producer) {
+        public ContentNegotiator mediaType(String mediaType, Function<Request, CompletableFuture<ResponseBody>> producer) {
             mediaTypeProducers.put(mediaType, producer);
             return this;
         }

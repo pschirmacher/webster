@@ -1,5 +1,7 @@
 package webster.decisions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import webster.requestresponse.Request;
 import webster.requestresponse.Response;
 import webster.resource.Resource;
@@ -8,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 public class Decision implements Node {
+    private final static Logger logger = LoggerFactory.getLogger(Decision.class);
 
     private final String name;
     private final BiFunction<Resource, Request, CompletableFuture<Boolean>> decision;
@@ -26,7 +29,7 @@ public class Decision implements Node {
         return decision
                 .apply(resource, request)
                 .thenCompose(decisionResult -> {
-                    System.out.println("made " + name + " decision -> " + decisionResult);
+                    logger.debug("made " + name + " decision -> " + decisionResult);
                     return decisionResult
                             ? onTrue.apply(resource, request)
                             : onFalse.apply(resource, request);

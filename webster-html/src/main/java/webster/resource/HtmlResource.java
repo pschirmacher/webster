@@ -1,6 +1,8 @@
 package webster.resource;
 
 import webster.requestresponse.Request;
+import webster.requestresponse.ResponseBody;
+import webster.requestresponse.Responses;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,9 +17,9 @@ public abstract class HtmlResource implements Resource, Html {
     }
 
     @Override
-    public CompletableFuture<Object> entity(Request request) {
+    public CompletableFuture<ResponseBody> entity(Request request) {
         return templateModel(request)
-                .thenApply(model -> renderHtml(template(), model, request));
+                .thenApply(model -> Responses.bodyFrom(renderHtml(template(), model, request)));
     }
 
     public abstract String template();
