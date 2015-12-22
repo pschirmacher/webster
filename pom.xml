@@ -56,7 +56,7 @@
                 <version>1.7.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>webster</groupId>
+                <groupId>com.innoq</groupId>
                 <artifactId>webster-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

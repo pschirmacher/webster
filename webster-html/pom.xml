@@ -13,7 +13,7 @@
     <name>Webster Html</name>
     <dependencies>
         <dependency>
-            <groupId>webster</groupId>
+            <groupId>com.innoq</groupId>
             <artifactId>webster-core</artifactId>
         </dependency>
         <dependency>
