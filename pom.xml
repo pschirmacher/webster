@@ -4,11 +4,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>webster</groupId>
+    <parent>
+      <groupId>com.innoq</groupId>
+      <artifactId>innoq-oss-parent</artifactId>
+      <version>2</version>
+    </parent>
+    <groupId>com.innoq</groupId>
     <artifactId>webster</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Webster Parent Pom</name>
+    <description>Webmachine inspired HTTP for the JVM.</description>
+    <url>https://github.com/pschirmacher/webster</url>
+    <scm>
+        <connection>scm:git:git@github.com:pschirmacher/webster.git</connection>
+        <developerConnection>scm:git:git@github.com:pschirmacher/webster.git</developerConnection>
+        <url>git@github.com:pschirmacher/webster.git</url>
+    </scm>    
 
+    <developers>
+        <developer>
+          <id>philipps</id>
+          <name>Philipp Schirmacher</name>
+          <email>philipp.schirmacher@innoq dot com</email>
+        </developer>
+    </developers>    
     <modules>
         <module>webster-core</module>
         <module>webster-html</module>
@@ -36,7 +56,7 @@
                 <version>1.7.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>webster</groupId>
+                <groupId>com.innoq</groupId>
                 <artifactId>webster-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
