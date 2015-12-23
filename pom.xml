@@ -51,9 +51,9 @@
             </dependency>
             <dependency>
                 <!-- TODO excludes -->
-                <groupId>org.fusesource.scalate</groupId>
+                <groupId>org.scalatra.scalate</groupId>
                 <artifactId>scalate-core_2.10</artifactId>
-                <version>1.7.0-SNAPSHOT</version>
+                <version>1.7.0</version>
             </dependency>
             <dependency>
                 <groupId>com.innoq</groupId>

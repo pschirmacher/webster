@@ -17,7 +17,7 @@
             <artifactId>webster-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.fusesource.scalate</groupId>
+            <groupId>org.scalatra.scalate</groupId>
             <artifactId>scalate-core_2.10</artifactId>
         </dependency>
     </dependencies>
