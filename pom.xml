@@ -68,20 +68,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>fusesource.nexus.m2-snapshot</id>
-            <name>FuseSource Community Snapshot Repository</name>
-            <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
     <build>
         <pluginManagement>
             <plugins>
