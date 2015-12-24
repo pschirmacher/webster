@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.innoq</groupId>
     <artifactId>webster</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Webster Parent Pom</name>
     <description>Webmachine inspired HTTP for the JVM.</description>
@@ -18,7 +18,7 @@
         <connection>scm:git:git@github.com:pschirmacher/webster.git</connection>
         <developerConnection>scm:git:git@github.com:pschirmacher/webster.git</developerConnection>
         <url>git@github.com:pschirmacher/webster.git</url>
-      <tag>webster-0.1.0</tag>
+      <tag>HEAD</tag>
   </scm>    
 
     <developers>
