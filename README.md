@@ -67,14 +67,21 @@ Getting started
 Setup
 -----
 
-Java 8 and Maven 3 are required. Webster is not yet available from a public Maven repository so it has to be installed
-locally. Just clone this repo and install with Maven:
+Add this dependency to your Maven POM (or whatever build system you're using):
 
-    git clone https://github.com/pschirmacher/webster.git
-    cd webster
-    mvn install
-
-This will install the JARs to your local Maven repository.
+    <dependency>
+        <groupId>com.innoq</groupId>
+        <artifactId>webster-core</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+    
+If you want to serve HTML, add this as well:
+    
+    <dependency>
+        <groupId>com.innoq</groupId>
+        <artifactId>webster-html</artifactId>
+        <version>0.1.0</version>
+    </dependency>
 
 Example application
 -------------------
